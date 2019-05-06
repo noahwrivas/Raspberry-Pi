@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    {% if title %}
+        <title>Noah's Pi - {{ title }}</title>
+    {% else %}
+        <title>Noah's Pi</title>
+    {% endif %}
+</head>
+<body>
+    <div class="container">
+        <div id="title">
+            <h1>{{ title }}</h1>
+        </div>
+        <div class="data">
+            {% block content %}{% endblock %}
+        </div>
+        <div id="footer">
+            <hr>
+            {% if offer_register %}
+                <p>
+                    Don't have an account?   <a href="{{ url_for('register') }}" class="links">Sign up</a>
+                    <a href="{{ url_for('forgot') }}" class="links">Forgot Password</a>
+                </p>
+            {% endif %}
+            {% if offer_login %}
+                <p>
+                    Already have an account?   <a href="{{ url_for('login') }}" class="links">Login</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
