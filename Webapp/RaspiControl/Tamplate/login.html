@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form class="my-form" method="POST" action="{{ url_for('login') }}">
+        {{ form.hidden_tag() }}
+        {% if message %}
+            {% if message|length > 1 %}
+                <div class="valid-feedback">
+                    <span>{{  message  }}</span>
+                </div>
+            {% else %}
+                <div class="invalid-feedback">
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endif %}
+        <div class="username-field">
+            {{ form.username.label(class="entry-labels") }}
+            {% if form.username.errors %}
+                {{ form.username(class="entry-fields entry-fields-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.username(class="entry-fields") }}
+            {% endif %}
+        </div>
+        <div class="password-field">
+            {{ form.password.label(class="entry-labels") }}
+            {% if form.password.errors %}
+                {{ form.password(class="entry-fields entry-fields-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.password(class="entry-fields") }}
+            {% endif %}
+        </div>
+        <div class="buttons">
+            {{ form.submit(class="links submit") }}
+            {{ form.remember(class="remember-button") }}
+            {{ form.remember.label(class="remember-label") }}
+        </div>
+    </form>
+{% endblock content %}
