@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="content-section">
-        <form method="POST" action="{{ url_for('register') }}">
+       <h3 class="account-name">{{ current_user.username }}</h3> 
+       <h3 class="account-name">{{ current_user.email }}</h3> 
+       <h3 class="account-name">{{ current_user.phonenumber }}</h3> 
+       <h3 class="account-name">{{ current_user.provider }}</h3> 
+        <form method="POST" action="{{ url_for('account') }}">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.username.label(class="entry-labels") }}
@@ -80,9 +84,6 @@
                 {% else %}
                     {{ form.provider(class="entry-fields select-fields") }}
                 {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.submit(class="links submit") }}
             </div>
         </form>
     </div>
