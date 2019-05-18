@@ -7,8 +7,8 @@ body{
 }
 
 hr{
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
 
 .container{
@@ -66,13 +66,18 @@ hr{
     border: 2px solid #b00;
 }
 
+.select-fields{
+    padding: 20px;
+    margin-bottom: 7px;
+}
+
 .invalid-feedback span{
     color: #b00;
-    background-color: #fbb;
+    background-color: #fcc;
     border: 2px solid #b00;
     width: 100%;
-    padding: 5px;
-    font-size: 0.53em;
+    padding: 7px;
+    font-size: 0.57em;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
@@ -80,11 +85,11 @@ hr{
 
 .valid-feedback span{
     color: #070;
-    background-color: #bfb;
+    background-color: #cfc;
     border: 2px solid #070;
     width: 100%;
-    padding: 5px;
-    font-size: 0.53em;
+    padding: 7px;
+    font-size: 0.57em;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
