@@ -21,11 +21,6 @@ class RegistrationForm(FlaskForm):
     provider = SelectField("Service Provider:", choices=services)
     submit = SubmitField('Sign Up')
     remember = BooleanField('Remember Me') # dummy variable
-
-    try:
-        _ = User.query.all()
-    except:
-        db.create_all()
     
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
