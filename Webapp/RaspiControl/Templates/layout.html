@@ -25,13 +25,17 @@
             {% if offer_register %}
                 <p>
                     Don't have an account?   <a href="{{ url_for('register') }}" class="links">Sign up</a>
-                    <a href="{{ url_for('reset_request') }}" class="links">Forgot Password</a>
                 </p>
             {% endif %}
             {% if offer_login %}
                 <p>
-                    Already have an account?   <a href="{{ url_for('login') }}" class="links">Login</a>
+                    <a href="{{ url_for('login') }}" class="links">Login</a>
                 </p>
+            {% endif %}
+            {% if offer_forgot %}
+            <p>
+                    <a href="{{ url_for('forgot') }}" class="links">Forgot Password</a>
+            </p>
             {% endif %}
             {% if offer_logout_account %}
                 <p>
@@ -42,7 +46,7 @@
             {% if offer_logout_home %}
                 <p>
                     <a href="{{ url_for('home') }}" class="links">Home</a>
-                    <a href="{{ url_for('reset_request') }}" class="links">Logout</a>
+                    <a href="{{ url_for('logout') }}" class="links">Logout</a>
                 </p>
             {% endif %}
         </div>

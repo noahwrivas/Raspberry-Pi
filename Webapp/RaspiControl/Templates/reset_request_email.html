@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<form class="my-form" method="POST" action="{{ url_for('reset_request_email') }}">
+        {{ form.hidden_tag() }}
+        {% if message %}
+            {% if message != "Email was not found." %}
+                <div class="valid-feedback">
+                    <span>{{  message  }}</span>
+                </div>
+            {% else %}
+                <div class="invalid-feedback">
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endif %}
+        <div class="email-field">
+            {{ form.email.label(class="entry-labels") }}
+            {% if form.email.errors %}
+                {{ form.email(class="entry-fields entry-fields-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.email(class="entry-fields") }}
+            {% endif %}
+        </div>
+        <div class="buttons">
+            {{ form.submit(class="links submit") }}
+        </div>
+    </form>
+{% endblock content %}

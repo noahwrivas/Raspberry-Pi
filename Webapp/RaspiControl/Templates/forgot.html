@@ -1,33 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    <form class="my-form" method="POST" action="{{ url_for('login') }}">
-        {{ form.hidden_tag() }}
-        {% if message %}
-            {% if message != "Login Unsuccessful. Please check username and password." %}
-                <div class="valid-feedback">
-                    <span>{{  message  }}</span>
-                </div>
-            {% else %}
-                <div class="invalid-feedback">
-                    <span>{{ message }}</span>
-                </div>
-            {% endif %}
-        {% endif %}
-        <div class="username-field">
-            {{ form.email.label(class="entry-labels") }}
-            {% if form.email.errors %}
-                {{ form.email(class="entry-fields entry-fields-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.email.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-            {% else %}
-                {{ form.email(class="entry-fields") }}
-            {% endif %}
-        </div>
-        <div class="buttons">
-            {{ form.submit(class="links submit") }}
-        </div>
-    </form>
+    <h3>Request new password:</h3><br>
+    <div class="buttons">
+        <a href="{{ url_for('reset_request_email') }}" class="links">By Email</a>
+        <a href="{{ url_for('reset_request_text') }}" class="links">By Text</a>
+    </div>
 {% endblock content %}

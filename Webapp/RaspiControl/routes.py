@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, session
 from flask_login import login_user, current_user, logout_user, login_required
 from RaspiControl.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                RequestResetForm, ResetPasswordForm)
+                                RequestResetEmailForm, RequestResetTextForm, ResetPasswordForm)
 from RaspiControl.models import User, Appliances
 from RaspiControl import app, bcrypt, db
 
@@ -28,15 +28,15 @@ def login(message):
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             message = "Login Unsuccessful. Please check username and password."
-        return render_template('login.html', title='Login', form=form, offer_register="offer_register", message=message)
+        return render_template('login.html', title='Login', form=form, offer_register=True, offer_forgot=True, message=message)
     if message:
-        return render_template('login.html', title='Login', form=form, offer_register="offer_register", message=message)
-    return render_template('login.html', title='Login', form=form, offer_register="offer_register")
+        return render_template('login.html', title='Login', form=form, offer_register=True, offer_forgot=True, message=message)
+    return render_template('login.html', title='Login', form=form, offer_register=True, offer_forgot=True)
 
 @app.route("/home")
 @login_required
 def home():
-    return render_template("home.html", title="Home", offer_logout_account="offer_logout_account")
+    return render_template("home.html", title="Home", offer_logout_account=True)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -52,25 +52,38 @@ def register():
         message = f'Account created for {form.username.data}'
         return redirect(url_for('login', message=message))
         # return render_template('login.html', title='Login', form=form, offer_register="offer_register", message=message, complete="complete")
-    return render_template('register.html', title='Register', form=form, offer_login="offer_login")
+    return render_template('register.html', title='Register', form=form, offer_login=True, offer_forgot=True)
 
-@app.route("/forgot", methods=["GET", "POST"])
-def reset_request():
+@app.route("/forgot")
+def forgot():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    return render_template("forgot.html", title="Forgot Password", offer_login=True, offer_register=True)
+    
+@app.route("/request/email", methods=["GET", "POST"])
+def reset_request_email():
     if current_user.is_authenticated:
         return redirect(url_for('logout'))
-    form = RequestResetForm()
-    return render_template("reset_request.html", title="Reset Pasword", form=form)
+    form = RequestResetEmailForm()
+    return render_template("reset_request_email.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
 
-@app.route("/forgot/<token>", methods=["GET", "POST"])
+@app.route("/request/text", methods=["GET", "POST"])
+def reset_request_text():
+    if current_user.is_authenticated:
+        return redirect(url_for('logout'))
+    form = RequestResetTextForm()
+    return render_template("reset_request_text.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
+    
+@app.route("/request/<token>", methods=["GET", "POST"])
 def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('logout'))
     user = User.verify_reset_token(token)
     if user is None:
         message = "This is an invalid or expired token"
-        return redirect(url_for("forgot"))
+        return redirect(url_for("reset_request"))
     form = ResetPasswordForm()
-    return render_template("forgot.html", title="Reset Pasword", form=form)
+    return render_template("reset_request.html", title="Reset Pasword", form=form)
 
 @app.route("/logout")
 def logout():
@@ -83,4 +96,4 @@ def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         pass
-    return render_template("account.html", title="Account", form=form, offer_logout_home="True")
+    return render_template("account.html", title="Account", form=form, offer_logout_home=True)

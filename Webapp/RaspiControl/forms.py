@@ -74,14 +74,23 @@ class UpdateAccountForm(FlaskForm):
                 raise validationError("That phone number is already in use. Please choose a different one.")
 
 
-class RequestResetForm(FlaskForm):
-    email = StringField('Change Email:', validators=[Email()])
+class RequestResetEmailForm(FlaskForm):
+    email = StringField('Email:', validators=[DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('There is no account with that email. You must register first.')
+
+class RequestResetTextForm(FlaskForm):
+    phonenumber = StringField('Phone Number:', validators=[DataRequired(), Length(min=10, max=11)])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_phonenumber(self, email):
+        user = User.query.filter_by(email=phonenumber.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that phone number. You must register first.')
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=6, max=60)])
