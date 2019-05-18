@@ -2,8 +2,8 @@ from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, ValidationError
-from raspicontrol.models import User, Appliances
-from raspicontrol import db
+from RaspiControl.models import User, Appliances
+from RaspiControl import db
 
 
 services = [("@txt.att.net", "AT&T"), ("@messaging.sprintpcs.com", "Sprint"), 

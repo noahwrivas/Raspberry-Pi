@@ -1,12 +1,16 @@
 from flask import render_template, url_for, flash, redirect, request, session
 from flask_login import login_user, current_user, logout_user, login_required
-from raspicontrol.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
+from RaspiControl.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                 RequestResetForm, ResetPasswordForm)
-from raspicontrol.models import User, Appliances
-from raspicontrol import app, bcrypt, db
+from RaspiControl.models import User, Appliances
+from RaspiControl import app, bcrypt, db
 
 @app.route("/")
 def default():
+    try:
+        _ = User.query.all()
+    except:
+        db.create_all()
     return redirect(url_for("login"))
 
 @app.route("/login", defaults={"message" : ""}, methods=["GET", "POST"])
