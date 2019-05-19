@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
     <h3>Request new password:</h3><br>
+    {% if message %}
+        {% if message != "This is an invalid or expired token" %}
+            <div class="valid-feedback">
+                <span>{{  message  }}</span>
+            </div>
+        {% else %}
+            <div class="invalid-feedback">
+                <span>{{ message }}</span>
+            </div>
+        {% endif %}
+    {% endif %}
     <div class="buttons">
         <a href="{{ url_for('reset_request_email') }}" class="links">By Email</a>
         <a href="{{ url_for('reset_request_text') }}" class="links">By Text</a>

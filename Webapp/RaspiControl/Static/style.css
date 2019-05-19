@@ -25,6 +25,7 @@ hr{
     margin-bottom: 20px;
     grid-area: header;
     font-size: 36px;
+    line-height: 48px;
 }
 
 .links{

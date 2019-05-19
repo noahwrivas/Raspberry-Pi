@@ -17,7 +17,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password:',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
-    phonenumber = StringField("Phone Number:", validators=[DataRequired(), Length(min=10, max=11)])
+    phonenumber = IntegerField('Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid number.')])    
     provider = SelectField("Service Provider:", choices=services)
     submit = SubmitField('Sign Up')
     remember = BooleanField('Remember Me') # dummy variable
@@ -51,7 +51,7 @@ class UpdateAccountForm(FlaskForm):
     password = PasswordField('Change Password: *', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password: *',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
-    phonenumber = StringField("Change Phone Number:", validators=[DataRequired(), Length(min=10, max=11)])
+    phonenumber = IntegerField('Change Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid number.')])    
     provider = SelectField("Change Service Provider:", choices=services)
     submit = SubmitField('Confirm Changes')
 
@@ -84,11 +84,11 @@ class RequestResetEmailForm(FlaskForm):
             raise ValidationError('There is no account with that email. You must register first.')
 
 class RequestResetTextForm(FlaskForm):
-    phonenumber = StringField('Phone Number:', validators=[DataRequired(), Length(min=10, max=11)])
+    phonenumber = IntegerField('Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid number.')])
     submit = SubmitField('Request Password Reset')
 
-    def validate_phonenumber(self, email):
-        user = User.query.filter_by(email=phonenumber.data).first()
+    def validate_phonenumber(self, phonenumber):
+        user = User.query.filter_by(phonenumber=phonenumber.data).first()
         if user is None:
             raise ValidationError('There is no account with that phone number. You must register first.')
 

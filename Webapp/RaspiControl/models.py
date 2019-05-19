@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(32), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    phonenumber = db.Column(db.String(25), unique=True, nullable=False)
+    phonenumber = db.Column(db.Integer, unique=True, nullable=False)
     provider = db.Column(db.String(60), unique=False, nullable=False)
 
     def get_reset_token(self, expires_sec=1800):
