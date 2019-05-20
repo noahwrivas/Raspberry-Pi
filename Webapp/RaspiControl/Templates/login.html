@@ -19,7 +19,7 @@
                 {{ form.username(class="entry-fields entry-fields-invalid") }}
                 <div class="invalid-feedback">
                     {% for error in form.username.errors %}
-                        <span>{{ error }}</span>
+                        <span>{{ error }}</span><br>
                     {% endfor %}
                 </div>
             {% else %}
@@ -32,7 +32,7 @@
                 {{ form.password(class="entry-fields entry-fields-invalid") }}
                 <div class="invalid-feedback">
                     {% for error in form.password.errors %}
-                        <span>{{ error }}</span>
+                        <span>{{ error }}</span><br>
                     {% endfor %}
                 </div>
             {% else %}

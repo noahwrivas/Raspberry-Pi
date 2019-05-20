@@ -1,12 +1,10 @@
-from flask import render_template, url_for, flash, redirect, request, session
+from flask import render_template, url_for, redirect, request, session
 from flask_login import login_user, current_user, logout_user, login_required
-# from flask_mail import Message
 from RaspiControl.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                RequestResetEmailForm, RequestResetTextForm, ResetPasswordForm)
+                                RequestResetEmailForm, ResetPasswordForm)
 from RaspiControl.models import User, Appliances
-from RaspiControl.communication import send_notification
-from RaspiControl import app, bcrypt, db#, mail
-# import os
+from RaspiControl.communication import send_notification, send_reset_token
+from RaspiControl import app, bcrypt, db
 
 @app.route("/")
 def default():
@@ -65,40 +63,9 @@ def account():
         pass
     return render_template("account.html", title="Account", form=form, offer_logout_home=True)
 
-def send_reset_token(user, method):
-    token = user.get_reset_token()
-    message = f"""To reset your password, visit the following link:
-    \
-    {url_for('reset_token', token=token, _external=True)}
-    \
-    If you did not make this request then you should consider changing your information for your own protection.
-    """
-    if method == "email":
-        send_notification(contact=user.email, method="email", subject="Password Reset Request", message=message)
-        # msg = Message(subject="Password Reset Request", sender=os.environ.get("RASPICONTROL_EMAIL"), recipients=[user.email])
-    else:
-        send_notification(contact=user.phonenumber, method="email", subject="Password Reset Request", message=message, provider=user.provider)
-
-        # msg = Message(subject="Password Reset Request", sender=os.environ.get("RASPICONTROL_EMAIL"), recipients=[f"{user.phonenumber}{user.provider}"])
-    # msg.body = f"""To reset your password, visit the following link:
-    
-    # {url_for('reset_token', token=token, _external=True)}
-    
-    # If you did not make this request then you should consider changing your information for your own protection.
-    # """
-    # mail.send(msg)
-
-@app.route("/forgot", defaults={"message" : ""})
-@app.route("/forgot/<message>")
+@app.route("/forgot", defaults={"message" : ""}, methods=["GET", "POST"])
+@app.route("/forgot/<message>", methods=["GET", "POST"])
 def forgot(message):
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-    if message:
-        return render_template("forgot.html", title="Forgot Password", offer_login=True, offer_register=True, message=message)
-    return render_template("forgot.html", title="Forgot Password", offer_login=True, offer_register=True)
-
-@app.route("/request-email", methods=["GET", "POST"])
-def reset_request_email():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RequestResetEmailForm()
@@ -107,17 +74,21 @@ def reset_request_email():
         send_reset_token(user, "email")
         message = "An email has been sent to reset your password."
         return redirect(url_for("login", message=message))
-    return render_template("reset_request_email.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
+    if message:
+        return render_template("forgot.html", title="Forgot Password", form=form, offer_login=True, offer_register=True, message=message)
+    return render_template("forgot.html", title="Forgot Pasword", form=form, offer_login=True, offer_register=True)
 
-@app.route("/request-text", methods=["GET", "POST"])
-def reset_request_text():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-    form = RequestResetTextForm()
-    if form.validate_on_submit():
-        message = "A text has been sent to reset your password."
-        return redirect(url_for("login", message=message))
-    return render_template("reset_request_text.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
+# @app.route("/request-text", methods=["GET", "POST"])
+# def reset_request_text():
+#     if current_user.is_authenticated:
+#         return redirect(url_for('home'))
+#     form = RequestResetTextForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(phonenumber=form.phonenumber.data).first()
+#         send_reset_token(user, "text")
+#         message = "A text has been sent to reset your password."
+#         return redirect(url_for("login", message=message))
+#     return render_template("reset_request_text.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
 
 @app.route("/request/<token>", methods=["GET", "POST"])
 def reset_token(token):
@@ -132,9 +103,9 @@ def reset_token(token):
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user.password = hashed_password
         db.session.commit()
-        message = f'Password has been updated for {form.username.data}'
+        message = f'Password has been updated for {user.username}'
         return redirect(url_for('login', message=message))
-    return render_template("reset_request.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
+    return render_template("reset_token.html", title="Reset Pasword", form=form, offer_login=True, offer_register=True)
 
 @app.route("/logout")
 def logout():

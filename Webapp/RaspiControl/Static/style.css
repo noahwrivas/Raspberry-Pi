@@ -21,11 +21,11 @@ hr{
 
 #title{
     text-align: center;
-    margin-top: 36px;
-    margin-bottom: 20px;
+    margin-top: 30px;
+    margin-bottom: 16px;
     grid-area: header;
     font-size: 36px;
-    line-height: 48px;
+    line-height: 52px;
 }
 
 .links{
@@ -78,7 +78,7 @@ hr{
     border: 2px solid #b00;
     width: 100%;
     padding: 7px;
-    font-size: 0.57em;
+    font-size: 0.55em;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
@@ -90,7 +90,7 @@ hr{
     border: 2px solid #070;
     width: 100%;
     padding: 7px;
-    font-size: 0.57em;
+    font-size: 0.55em;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
@@ -99,6 +99,7 @@ hr{
 #footer{
     grid-area: footer;
     font-size: 14px;
+    margin-bottom: 10px;
 }
 
 #footer p{

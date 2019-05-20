@@ -17,7 +17,10 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password:',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
-    phonenumber = IntegerField('Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid number.')])    
+    phonenumber = IntegerField('Phone Number:', validators=[DataRequired(), 
+                                                            NumberRange(min=1111111111, 
+                                                                        max=99999999999, 
+                                                                        message='Must be a valid phone number.')])    
     provider = SelectField("Service Provider:", choices=services)
     submit = SubmitField('Sign Up')
     remember = BooleanField('Remember Me') # dummy variable
@@ -82,15 +85,6 @@ class RequestResetEmailForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('There is no account with that email. You must register first.')
-
-class RequestResetTextForm(FlaskForm):
-    phonenumber = IntegerField('Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid number.')])
-    submit = SubmitField('Request Password Reset')
-
-    def validate_phonenumber(self, phonenumber):
-        user = User.query.filter_by(phonenumber=phonenumber.data).first()
-        if user is None:
-            raise ValidationError('There is no account with that phone number. You must register first.')
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=6, max=60)])

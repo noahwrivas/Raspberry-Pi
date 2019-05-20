@@ -48,7 +48,7 @@
                     {{ form.confirm_password(class="entry-fields entry-fields-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.confirm_password.errors %}
-                            <span>{{ error }}</span>
+                            <span>{{ error }}</span><br>
                         {% endfor %}
                     </div>
                 {% else %}

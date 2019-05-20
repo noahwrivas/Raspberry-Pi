@@ -3,7 +3,7 @@
     <h3>
         Enter new password:
     </h3>
-    <form class="my-form" method="POST" action="{{ url_for('reset_token') }}">
+    <form class="my-form" method="POST" action="">
         {{ form.hidden_tag() }}
         {% if message %}
             {% if message != "my message" %}
@@ -22,7 +22,7 @@
                 {{ form.password(class="entry-fields entry-fields-invalid") }}
                 <div class="invalid-feedback">
                     {% for error in form.password.errors %}
-                        <span>{{ error }}</span>
+                        <span>{{ error }}</span><br>
                     {% endfor %}
                 </div>
             {% else %}
@@ -35,7 +35,7 @@
                 {{ form.confirm_password(class="entry-fields entry-fields-invalid") }}
                 <div class="invalid-feedback">
                     {% for error in form.confirm_password.errors %}
-                        <span>{{ error }}</span>
+                        <span>{{ error }}</span><br>
                     {% endfor %}
                 </div>
             {% else %}

@@ -14,13 +14,14 @@ class User(db.Model, UserMixin):
     phonenumber = db.Column(db.Integer, unique=True, nullable=False)
     provider = db.Column(db.String(60), unique=False, nullable=False)
 
-    def get_reset_token(self, expires_sec=1800):
+    def get_reset_token(self, expires_sec=1800): # 30 minutes until token expires
         s = Serializer(app.config["SECRET_KEY"], expires_sec)
         return s.dumps({"user_id": self.id}).decode("utf-8")
 
     @staticmethod
     def verify_reset_token(token):    
         s = Serializer(app.config["SECRET_KEY"])
+        print("s:", s)
         try:
             user_id = s.loads(token)["user_id"]
         except:
