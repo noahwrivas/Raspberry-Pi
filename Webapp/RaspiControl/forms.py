@@ -5,12 +5,13 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 from RaspiControl.models import User, Appliances
 from RaspiControl import db
 
-
+# Allowed service providers with email to text functionality
 services = [("@txt.att.net", "AT&T"), ("@messaging.sprintpcs.com", "Sprint"), 
             ("@vtext.com", "Verizon",), ("@tmomail.net", "T-Mobile"), ("@mymetropcs.com", "Metro PCS"), 
             ("@myboostmobile.com", "Boost Mobile"), ("@sms.mycricket.com", "Cricket")]
 
 class RegistrationForm(FlaskForm):
+    """ Registration Data Form """
     username = StringField('Username:',
                            validators=[DataRequired(), Length(min=4, max=32)])
     email = StringField('Email:', validators=[DataRequired(), Email()])
@@ -23,25 +24,29 @@ class RegistrationForm(FlaskForm):
                                                                         message='Must be a valid phone number.')])    
     provider = SelectField("Service Provider:", choices=services)
     submit = SubmitField('Sign Up')
-    remember = BooleanField('Remember Me') # dummy variable
+    # remember = BooleanField('Remember Me') # dummy variable
     
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        """ Check if Username Already Exists in Database """
+        user = User.query.filter_by(username=username.data.upper()).first()
         if user:
             raise ValidationError('That username is taken. Please choose a different one.')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        """ Check if Email Already Exists in Database"""
+        user = User.query.filter_by(email=email.data.upper()).first()
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
 
     def validate_phonenumber(self, phonenumber):
+        """ Check if Phone Number Already Exists in Database """
         user = User.query.filter_by(phonenumber=phonenumber.data).first()
         if user:
             raise ValidationError("That phone number is already in use. Please choose a different one.")
 
 
 class LoginForm(FlaskForm):
+    """ Login Form """
     username = StringField('Username:', validators=[DataRequired(), Length(min=4, max=32)])
     password = PasswordField('Password:', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
@@ -49,6 +54,7 @@ class LoginForm(FlaskForm):
 
 
 class UpdateAccountForm(FlaskForm):
+    """ Update Account Form """
     username = StringField('Change Username:')
     email = StringField('Change Email:', validators=[Email()])
     password = PasswordField('Change Password:', validators=[DataRequired(), Length(min=6, max=60)])
@@ -56,21 +62,24 @@ class UpdateAccountForm(FlaskForm):
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
     phonenumber = IntegerField('Change Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid phone number.')])    
     provider = SelectField("Change Service Provider:", choices=services)
-    submit = SubmitField('Confirm Changes')
+    submit = SubmitField('Submit Changes')
 
     def validate_username(self, username):
+        """ Check if Username Already Exists in Database """
         if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
+            user = User.query.filter_by(username=username.data.upper()).first()
             if user:
                 raise ValidationError('That username is taken. Please choose a different one.')
 
     def validate_email(self, email):
+        """ Check if Email Already Exists in Database """
         if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
+            user = User.query.filter_by(email=email.data.upper()).first()
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
     def validate_phonenumber(self, phonenumber):
+        """ Check if Phone Number Already Exists in Database """
         if phonenumber.data != current_user.phonenumber:
             user = User.query.filter_by(phonenumber=phonenumber.data).first()
             if user:
@@ -78,15 +87,18 @@ class UpdateAccountForm(FlaskForm):
 
 
 class RequestResetEmailForm(FlaskForm):
+    """ Request Password Form """
     email = StringField('Email:', validators=[DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        """ Ensure Email is in Use """
+        user = User.query.filter_by(email=email.data.upper()).first()
         if user is None:
             raise ValidationError('There is no account with that email. You must register first.')
 
 class ResetPasswordForm(FlaskForm):
+    """ Reset Password Form """
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password:',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])

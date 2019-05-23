@@ -11,6 +11,7 @@ class CommunicationSending():
         self.message = ""
 
     def send_reset_token(self):
+        """ Prepare To Send Token """
         token = self.user.get_reset_token()
 
         self.message = f"""<p>To reset your password, visit the following link:</p>\
@@ -21,8 +22,8 @@ class CommunicationSending():
     """
         self.send_email()
 
-
     def send_email(self):
+        """ Send Email Containing Token """
         gmailsmpt = "smtp.gmail.com"
         msg = MIMEMultipart()
         msg["From"] = os.environ.get("RASPICONTROL_EMAIL")
