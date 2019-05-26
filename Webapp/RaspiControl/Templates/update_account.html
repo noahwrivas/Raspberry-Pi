@@ -48,21 +48,6 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if selected == "Password" %}
-                <div class="form-group">
-                    {{ form.confirm_password.label(class="entry-labels") }}
-                    {% if form.confirm_password.errors %}
-                        {{ form.confirm_password(class="entry-fields entry-fields-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.confirm_password.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.confirm_password(class="entry-fields") }}
-                    {% endif %}
-                </div>
-            {% endif %}
             {% if selected == "PhoneNumber" %}
                 <div class="form-group">
                     {{ form.phonenumber.label(class="entry-labels") }}
@@ -93,6 +78,19 @@
                     {% endif %}
                 </div>
             {% endif %}
+            <div class="form-group">
+                {{ form.confirm_password.label(class="entry-labels") }}
+                {% if form.confirm_password.errors %}
+                    {{ form.confirm_password(class="entry-fields entry-fields-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.confirm_password(class="entry-fields") }}
+                {% endif %}
+            </div>
             <div class="buttons">
                 {{ form.submit(class="links submit") }}
             </div>
