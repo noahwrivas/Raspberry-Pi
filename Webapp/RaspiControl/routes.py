@@ -1,7 +1,7 @@
 from flask import render_template, url_for, redirect, request, session
 from flask_login import login_user, current_user, logout_user, login_required
 from RaspiControl.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                RequestResetEmailForm, ResetPasswordForm)
+                                RequestResetEmailForm, ResetPasswordForm, services)
 from RaspiControl.models import User, Appliances
 from RaspiControl.communication import CommunicationSending
 from RaspiControl import app, bcrypt, db
@@ -62,32 +62,94 @@ def register():
 @login_required
 def account():
     """ Account Info Page """
-    return render_template("account_info.html", title="Account", offer_logout_home=True)
+    provider = dict(services).get(current_user.provider)
+    return render_template("account_info.html", title="Account", provider=provider, offer_logout_home=True)
 
-@app.route("/account/update", defaults={"selected" : ""}, methods=["GET", "POST", "DELETE"])
-@app.route("/account/update/<selected>", methods=["GET", "POST", "DELETE"])
+@app.route("/account/update", defaults={"selected" : None}, methods=["GET", "POST"])
+@app.route("/account/update/<selected>", methods=["GET", "POST"])
 @login_required
 def update_account(selected):
     """ Update Account Page """
     form = UpdateAccountForm()
-    print(selected)
+    print("Top: ", form.errors)
     if form.validate_on_submit():
-        print("in if statement", selected)
+        print("After if statement")
         if selected == "Username":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.email.data = current_user.email
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
             current_user.username = form.username.data.upper()
             current_user.display_username = form.username.data
         elif selected == "Email":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
             current_user.email = form.email.data.upper()
             current_user.display_email = form.email.data
         elif selected == "Password":
+            form.username.data = current_user.username
+            form.email.data = current_user.email
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
             current_user.password = hashed_password
-        else:
-            current_user.selected = form.selected.data
+        elif selected == "Phonenumber":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.email.data = current_user.email
+            form.provider.data = current_user.provider
+            current_user.phonenumber = form.phonenumber.data
+        elif selected == "Provider":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.phonenumber.data = current_user.phonenumber
+            form.email.data = current_user.email
+            current_user.provider = form.provider.data
         db.session.commit()
         message = f'{selected} updated for {current_user.display_username}'
         logout_user()
         return redirect(url_for('login', message=message))
+    elif request.method == "POST":
+        print("POST METHOD")
+        if selected == "Username":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.email.data = current_user.email
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
+        elif selected == "Email":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
+        elif selected == "Password":
+            form.username.data = current_user.username
+            form.email.data = current_user.email
+            form.phonenumber.data = current_user.phonenumber
+            form.provider.data = current_user.provider
+        elif selected == "Phonenumber":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.email.data = current_user.email
+            form.provider.data = current_user.provider
+        elif selected == "Provider":
+            form.password.data = current_user.password
+            form.confirm_password.data = current_user.password
+            form.username.data = current_user.username
+            form.phonenumber.data = current_user.phonenumber
+            form.email.data = current_user.email
+        print(f"user:\t{form.username.data}\npass:\t{form.password.data}\nemail:\t{form.email.data}\nphonenumber:\t{form.phonenumber.data}\nprovider:\t{form.provider.data}")
+
+    print(f"user:\t{form.username.data}\npass:\t{form.password.data}\nemail:\t{form.email.data}\nphonenumber:\t{form.phonenumber.data}\nprovider:\t{form.provider.data}")
+    print("Bottom: ", form.errors)
     return render_template("update_account.html", title="Account", selected=selected, form=form, offer_logout_home=True)
 
 @app.route("/forgot", defaults={"message" : ""}, methods=["GET", "POST"])

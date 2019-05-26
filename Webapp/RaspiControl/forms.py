@@ -55,12 +55,14 @@ class LoginForm(FlaskForm):
 
 class UpdateAccountForm(FlaskForm):
     """ Update Account Form """
-    username = StringField('Change Username:')
+    username = StringField('Change Username:', validators=[DataRequired(), Length(min=4, max=32)])
     email = StringField('Change Email:', validators=[Email()])
     password = PasswordField('Change Password:', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password:',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
-    phonenumber = IntegerField('Change Phone Number:', validators=[DataRequired(), NumberRange(min=1111111111, max=99999999999, message='Must be a valid phone number.')])    
+    phonenumber = IntegerField('Change Phone Number:', validators=[DataRequired(), 
+                                                                    NumberRange(min=1111111111, max=99999999999, 
+                                                                                message='Must be a valid phone number.')])    
     provider = SelectField("Change Service Provider:", choices=services)
     submit = SubmitField('Submit Changes')
 
