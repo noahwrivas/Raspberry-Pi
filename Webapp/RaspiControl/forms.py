@@ -57,12 +57,13 @@ class UpdateAccountForm(FlaskForm):
     """ Update Account Form """
     username = StringField('Change Username:', validators=[DataRequired(), Length(min=4, max=32)])
     email = StringField('Change Email:', validators=[Email()])
-    password = PasswordField('Change Password:', validators=[DataRequired(), Length(min=6, max=60)])
+    old_password = PasswordField('Old Password:', validators=[DataRequired(), Length(min=6, max=60)])
+    new_password = PasswordField('New Password:', validators=[DataRequired(), Length(min=6, max=60)])
     confirm_password = PasswordField('Confirm Password:',
-                                    validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
+                                    validators=[DataRequired(), EqualTo('new_password', message="Passwords must match")])
     phonenumber = IntegerField('Change Phone Number:', validators=[DataRequired(), 
                                                                     NumberRange(min=1111111111, max=99999999999, 
-                                                                                message='Must be a valid phone number.')])    
+                                                                                message='Must be a valid US phone number.')])    
     provider = SelectField("Change Service Provider:", choices=services)
     submit = SubmitField('Submit Changes')
 
@@ -105,6 +106,12 @@ class ResetPasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password:',
                                     validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
     submit = SubmitField('Reset Password')
+
+class DeleteAccountForm(FlaskForm):
+    """ Update Account Form """
+    confirm_password = PasswordField('Confirm Password:', validators=[DataRequired(), Length(min=6, max=60)])
+    submit = SubmitField('Delete Account')
+
 
 class ApplianceForm(FlaskForm):
     pass

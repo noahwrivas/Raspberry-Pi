@@ -1,7 +1,8 @@
 from flask import render_template, url_for, redirect, request, session
 from flask_login import login_user, current_user, logout_user, login_required
 from RaspiControl.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                RequestResetEmailForm, ResetPasswordForm, services)
+                                RequestResetEmailForm, ResetPasswordForm, services,
+                                DeleteAccountForm)
 from RaspiControl.models import User, Appliances
 from RaspiControl.communication import CommunicationSending
 from RaspiControl import app, bcrypt, db
@@ -25,6 +26,7 @@ def login(message):
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data.upper()).first()
+        print(form.password.data)
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             return redirect(url_for('home'))
@@ -72,17 +74,16 @@ def update_account(selected):
     """ Update Account Page """
     form = UpdateAccountForm()
     print("Top: ", form.errors)
-    if request.method == "POST":
-        print("POST METHOD")
+    if request.method == "POST": # load in values when submiting a post request to satisify data requirment
         if selected == "Username":
-            form.password.data = current_user.password
-            form.confirm_password.data = current_user.password
+            form.new_password.data = form.confirm_password.data
+            form.old_password.data = current_user.password            
             form.email.data = current_user.email
             form.phonenumber.data = current_user.phonenumber
             form.provider.data = current_user.provider
         elif selected == "Email":
-            form.password.data = current_user.password
-            form.confirm_password.data = current_user.password
+            form.new_password.data = form.confirm_password.data
+            form.old_password.data = current_user.password
             form.username.data = current_user.username
             form.phonenumber.data = current_user.phonenumber
             form.provider.data = current_user.provider
@@ -92,59 +93,64 @@ def update_account(selected):
             form.phonenumber.data = current_user.phonenumber
             form.provider.data = current_user.provider
         elif selected == "Phonenumber":
-            form.password.data = current_user.password
-            form.confirm_password.data = current_user.password
+            form.new_password.data = form.confirm_password.data
+            form.old_password.data = current_user.password
             form.username.data = current_user.username
             form.email.data = current_user.email
             form.provider.data = current_user.provider
         elif selected == "Provider":
-            form.password.data = current_user.password
-            form.confirm_password.data = current_user.password
+            form.new_password.data = form.confirm_password.data
+            form.old_password.data = current_user.password
             form.username.data = current_user.username
             form.phonenumber.data = current_user.phonenumber
             form.email.data = current_user.email
     if form.validate_on_submit():
-        print("After if statement")
-        if selected == "Username":
-            # form.password.data = current_user.password
-            # form.email.data = current_user.email
-            # form.phonenumber.data = current_user.phonenumber
-            # form.provider.data = current_user.provider
-            current_user.username = form.username.data.upper()
-            current_user.display_username = form.username.data
-        elif selected == "Email":
-            # form.password.data = current_user.password
-            # form.username.data = current_user.username
-            # form.phonenumber.data = current_user.phonenumber
-            # form.provider.data = current_user.provider
-            current_user.email = form.email.data.upper()
-            current_user.display_email = form.email.data
+        print("\nSubmit\n")
+        print(form.confirm_password.data)
+        if bcrypt.check_password_hash(current_user.password, form.confirm_password.data):
+            print("Check")
+            if selected == "Username":
+                print("Username")
+                current_user.username = form.username.data.upper()
+                current_user.display_username = form.username.data
+            elif selected == "Email":
+                current_user.email = form.email.data.upper()
+                current_user.display_email = form.email.data
+            elif selected == "Phonenumber":
+                current_user.phonenumber = form.phonenumber.data
+            elif selected == "Provider":
+                current_user.provider = form.provider.data
         elif selected == "Password":
-            # form.username.data = current_user.username
-            # form.email.data = current_user.email
-            # form.phonenumber.data = current_user.phonenumber
-            # form.provider.data = current_user.provider
-            hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-            current_user.password = hashed_password
-        elif selected == "Phonenumber":
-            # form.password.data = current_user.password
-            # form.username.data = current_user.username
-            # form.email.data = current_user.email
-            # form.provider.data = current_user.provider
-            current_user.phonenumber = form.phonenumber.data
-        elif selected == "Provider":
-            # form.password.data = current_user.password
-            # form.username.data = current_user.username
-            # form.phonenumber.data = current_user.phonenumber
-            # form.email.data = current_user.email
-            current_user.provider = form.provider.data
+            if bcrypt.check_password_hash(current_user.password, form.old_password.data):
+                hashed_password = bcrypt.generate_password_hash(form.new_password.data).decode("utf-8")
+                current_user.password = hashed_password
+        else:
+            message = "Incorrect Password"
+            print(form.confirm_password.data)
+            print("Bottom: ", form.errors)
+            return render_template("update_account.html", title="Account", selected=selected, message=message, form=form, offer_logout_home=True)
         db.session.commit()
         message = f'{selected} updated for {current_user.display_username}'
         logout_user()
         return redirect(url_for('login', message=message))
-    print(f"user:\t{form.username.data}\npass:\t{form.password.data}\nemail:\t{form.email.data}\nphonenumber:\t{form.phonenumber.data}\nprovider:\t{form.provider.data}")
+    print(f"user:\t{form.username.data}\npass:\t{form.new_password.data}\nemail:\t{form.email.data}\nphonenumber:\t{form.phonenumber.data}\nprovider:\t{form.provider.data}")
+    print(form.confirm_password.data)
     print("Bottom: ", form.errors)
     return render_template("update_account.html", title="Account", selected=selected, form=form, offer_logout_home=True)
+
+@login_required
+@app.route("/account/delete", methods=["GET", "POST"])
+def delete_account():
+    """ Delete Account Page """
+    form = DeleteAccountForm()
+    if form.validate_on_submit() and bcrypt.check_password_hash(current_user.password, form.confirm_password.data):
+        user = User.query.filter_by(username=current_user.username).first()
+        message = f"Account for {current_user.display_username} has been deleted"
+        logout_user()
+        db.session.delete(user)
+        db.session.commit()
+        return redirect(url_for("login", message=message))
+    return render_template("update_account.html", title="Account", selected="Delete", form=form, offer_logout_home=True)
 
 @app.route("/forgot", defaults={"message" : ""}, methods=["GET", "POST"])
 @app.route("/forgot/<message>", methods=["GET", "POST"])

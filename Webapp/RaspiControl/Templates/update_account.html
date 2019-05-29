@@ -3,6 +3,14 @@
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
+            {% if message %}
+                {% if message == "" %}
+                {% else %}
+                    <div class="invalid-feedback">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endif %}
+            {% endif %}
             {% if selected == "Username" %}
                 <div class="form-group">
                     {{ form.username.label(class="entry-labels") }}
@@ -35,18 +43,31 @@
             {% endif %}
             {% if selected == "Password" %}
                 <div class="form-group">
-                    {{ form.password.label(class="entry-labels") }}
-                    {% if form.password.errors %}
-                        {{ form.password(class="entry-fields entry-fields-invalid") }}
+                    {{ form.old_password.label(class="entry-labels") }}
+                    {% if form.old_password.errors %}
+                        {{ form.old_password(class="entry-fields entry-fields-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.password.errors %}
+                            {% for error in form.old_password.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.password(class="entry-fields") }}
+                        {{ form.old_password(class="entry-fields") }}
                     {% endif %}
                 </div>
+                <div class="form-group">
+                        {{ form.new_password.label(class="entry-labels") }}
+                        {% if form.new_password.errors %}
+                            {{ form.new_password(class="entry-fields entry-fields-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.new_password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.new_password(class="entry-fields") }}
+                        {% endif %}
+                    </div>
             {% endif %}
             {% if selected == "PhoneNumber" %}
                 <div class="form-group">
@@ -76,6 +97,11 @@
                     {% else %}
                         {{ form.provider(class="entry-fields select-fields") }}
                     {% endif %}
+                </div>
+            {% endif %}
+            {% if selected == "Delete" %}
+                <div class="center">
+                    <h3>Are you sure you want to permantly delete you account?</h3>
                 </div>
             {% endif %}
             <div class="form-group">
