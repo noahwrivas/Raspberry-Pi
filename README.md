@@ -14,7 +14,7 @@
 The appliaction is still under development but there are many things to come.
 
 **Planned Improvements:**
-- Account settings
+- Account settings ✔︎
 - Chat features
 - Live video feed
 - Customizable graphical data
